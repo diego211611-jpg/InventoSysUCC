@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InventoSys UCC - Sistema Integrado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background: #f0f4f8; color: #1a202c; }
+        .glass-card { background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        .btn-ucc { background: #2196f3; transition: all 0.3s; }
+        .btn-ucc:hover { background: #1976d2; transform: translateY(-1px); }
+    </style>
+</head>
+<body>
+
+<div id="loginSection" class="flex items-center justify-center h-screen">
+    <div class="glass-card p-8 w-full max-w-md text-center">
+        <h1 class="text-3xl font-bold text-blue-600 mb-2">InventoSys <span class="text-slate-800">UCC</span></h1>
+        <p class="text-slate-500 mb-6 italic">"Control y Trazabilidad de Activos"</p>
+        <div class="space-y-4">
+            <input id="user" type="text" placeholder="Usuario" class="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-blue-400">
+            <input id="pass" type="password" placeholder="Contraseña" class="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-blue-400">
+            <button onclick="login()" class="btn-ucc w-full text-white p-3 rounded-lg font-bold shadow-lg">INGRESAR</button>
+        </div>
+        <p class="mt-4 text-xs text-slate-400">Sugerencia: Admin / 123456++</p>
+    </div>
+</div>
+
+<div id="appSection" class="hidden min-h-screen flex flex-col">
+    <nav class="bg-blue-600 text-white p-4 shadow-md flex justify-between items-center px-8">
+        <span class="font-bold text-xl">InventoSys UCC</span>
+        <div class="flex items-center gap-4">
+            <span id="displayRol" class="bg-blue-800 px-3 py-1 rounded-full text-xs uppercase tracking-widest font-bold"></span>
+            <button onclick="location.reload()" class="text-sm hover:underline"><i class="fas fa-sign-out-alt"></i> Salir</button>
+        </div>
+    </nav>
+
+    <div class="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <div class="space-y-6">
+            <div id="panelRegistro" class="hidden glass-card p-6">
+                <h3 class="font-bold text-lg mb-4 text-blue-700"><i class="fas fa-plus-circle"></i> Escenario 1: Registro</h3>
+                <div class="space-y-3">
+                    <input id="regNombre" placeholder="Nombre del Equipo" class="w-full p-2 border rounded">
+                    <input id="regSerial" placeholder="Serial (Único)" class="w-full p-2 border rounded text-sm uppercase">
+                    <select id="regUbicacion" class="w-full p-2 border rounded">
+                        <option>Sede Central - Piso 1</option>
+                        <option>Sede Sur - Lab 202</option>
+                        <option>Sede Norte - Administrativo</option>
+                    </select>
+                    <button onclick="registrarEquipo()" class="btn-ucc w-full text-white p-2 rounded font-bold mt-2">Guardar Equipo</button>
+                </div>
+            </div>
+
+            <div id="panelTickets" class="hidden glass-card p-6">
+                <h3 class="font-bold text-lg mb-4 text-orange-600"><i class="fas fa-ticket-alt"></i> Tickets y Préstamos</h3>
+                <textarea id="ticketTexto" placeholder="Describe el problema o equipo solicitado..." class="w-full p-2 border rounded h-24"></textarea>
+                <button onclick="crearTicket()" class="w-full bg-orange-500 text-white p-2 rounded mt-2 font-bold hover:bg-orange-600 transition">Enviar Solicitud</button>
+            </div>
+
+            <div id="panelBoss" class="hidden glass-card p-6 border-2 border-purple-200">
+                <h3 class="font-bold text-lg mb-4 text-purple-700"><i class="fas fa-user-shield"></i> Administración Superior</h3>
+                <button onclick="alert('Funcionalidad: Crear Usuario')" class="w-full mb-2 bg-purple-100 p-2 rounded text-purple-700 hover:bg-purple-200 transition text-sm font-bold">👤 Crear Nuevo Usuario</button>
+                <button onclick="alert('Funcionalidad: Auditoría de Logs')" class="w-full bg-slate-100 p-2 rounded text-slate-700 hover:bg-slate-200 transition text-sm font-bold">🔑 Auditoría de Sistema</button>
+            </div>
+        </div>
+
+        <div class="lg:col-span-2">
+            <div class="glass-card overflow-hidden">
+                <div class="p-4 bg-slate-50 border-b flex justify-between items-center">
+                    <h3 class="font-bold text-slate-700">Inventario de Equipos</h3>
+                    <div class="flex gap-2">
+                        <input id="search" onkeyup="buscar()" placeholder="Buscar serial..." class="p-1 border rounded text-sm outline-none">
+                        <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded text-xs font-bold" id="counter">0 Activos</span>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-100 text-slate-600">
+                            <tr>
+                                <th class="p-3">ID Placa</th>
+                                <th class="p-3">Equipo</th>
+                                <th class="p-3">Serial</th>
+                                <th class="p-3">Estado</th>
+                                <th class="p-3">Ubicación</th>
+                                <th class="p-3 text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventarioTable" class="divide-y divide-slate-100">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// BASE DE DATOS INICIAL
+let usuarios = {
+    "user": {pass: "123456", rol: "user"},
+    "empleado": {pass: "123456+", rol: "empleado"},
+    "admin": {pass: "123456++", rol: "admin"},
+    "boss": {pass: "123456+-", rol: "boss"},
+    "madmin": {pass: "123456-+", rol: "madmin"}
+};
+
+let inventario = JSON.parse(localStorage.getItem('ucc_inventario')) || [
+    {id: 'UCC-001', nombre: 'Laptop Dell Latitude', serial: 'DELL789', estado: 'Disponible', ubicacion: 'Sede Central - Piso 1', historial: ['Registro inicial']}
+];
+
+let session = null;
+
+// LOGIN INTEGRADO
+function login() {
+    let u = document.getElementById("user").value.toLowerCase().trim();
+    let p = document.getElementById("pass").value.trim();
+
+    if(usuarios[u] && usuarios[u].pass === p) {
+        session = usuarios[u];
+        document.getElementById("loginSection").classList.add("hidden");
+        document.getElementById("appSection").classList.remove("hidden");
+        document.getElementById("displayRol").innerText = "ROL: " + session.rol;
+        configurarVistas();
+        renderTabla(inventario);
+    } else {
+        alert("❌ Credenciales incorrectas");
+    }
+}
+
+// CONTROL DE ACCESO (Escenarios BDD aplicados a roles)
+function configurarVistas() {
+    const rol = session.rol;
+    
+    // Solo Admin y Madmin pueden registrar equipos (Escenario 1)
+    if (["admin", "madmin"].includes(rol)) {
+        document.getElementById("panelRegistro").classList.remove("hidden");
+    }
+
+    // User y Empleado solo pueden solicitar (Escenario de préstamos)
+    if (["user", "empleado"].includes(rol)) {
+        document.getElementById("panelTickets").classList.remove("hidden");
+    }
+
+    // Boss tiene el control administrativo total
+    if (rol === "boss") {
+        document.getElementById("panelBoss").classList.remove("hidden");
+    }
+}
+
+// REGISTRO Y VALIDACIÓN (Escenario 1 y 9)
+function registrarEquipo() {
+    const nombre = document.getElementById("regNombre").value;
+    const serial = document.getElementById("regSerial").value.toUpperCase();
+    const ubicacion = document.getElementById("regUbicacion").value;
+
+    if (!nombre || !serial) return alert("Complete los datos");
+
+    // Escenario 9: Validar duplicidad
+    if (inventario.some(e => e.serial === serial)) {
+        alert("❌ ERROR: El serial " + serial + " ya existe. No se permiten duplicados.");
+        return;
+    }
+
+    const nuevo = {
+        id: 'UCC-' + Math.floor(Math.random()*900 + 100),
+        nombre,
+        serial,
+        estado: 'Almacén',
+        ubicacion,
+        historial: ['Equipo registrado por ' + session.rol]
+    };
+
+    inventario.push(nuevo);
+    save();
+    renderTabla(inventario);
+    alert("✅ Equipo registrado exitosamente");
+}
+
+function renderTabla(datos) {
+    const tabla = document.getElementById("inventarioTable");
+    const contador = document.getElementById("counter");
+    tabla.innerHTML = "";
+    contador.innerText = datos.length + " Activos";
+
+    datos.forEach(eq => {
+        tabla.innerHTML += `
+            <tr class="hover:bg-blue-50 transition">
+                <td class="p-3 font-mono text-blue-600 font-bold">${eq.id}</td>
+                <td class="p-3 font-medium">${eq.nombre}</td>
+                <td class="p-3 text-slate-500">${eq.serial}</td>
+                <td class="p-3"><span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-bold uppercase">${eq.estado}</span></td>
+                <td class="p-3 text-slate-500 text-xs">${eq.ubicacion}</td>
+                <td class="p-3 text-center">
+                    <button onclick="verHistorial('${eq.serial}')" class="text-blue-500 hover:text-blue-700 text-xs font-bold"><i class="fas fa-eye"></i> Historial</button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+// ESCENARIO 2: Búsqueda
+function buscar() {
+    let q = document.getElementById("search").value.toLowerCase();
+    let filtrado = inventario.filter(e => e.serial.toLowerCase().includes(q) || e.nombre.toLowerCase().includes(q));
+    renderTabla(filtrado);
+}
+
+// ESCENARIO 10: Historial
+function verHistorial(serial) {
+    let eq = inventario.find(e => e.serial === serial);
+    alert("HOJA DE VIDA (" + eq.nombre + "):\n\n" + eq.historial.join("\n"));
+}
+
+function save() {
+    localStorage.setItem('ucc_inventario', JSON.stringify(inventario));
+}
+
+function crearTicket() {
+    let t = document.getElementById("ticketTexto").value;
+    if(t) {
+        alert("✅ Ticket registrado para revisión técnica.");
+        document.getElementById("ticketTexto").value = "";
+    }
+}
+</script>
+</body>
+</html>
